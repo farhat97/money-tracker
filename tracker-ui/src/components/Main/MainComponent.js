@@ -1,6 +1,8 @@
 import {useState, setState} from 'react';
 import React from 'react';
-import { testApiCall } from '../../services/serverService';
+import { getExpenseCategories } from '../../services/serverService';
+
+import axios from 'axios';
 
 class MainComponent extends React.Component {
 
@@ -8,11 +10,10 @@ class MainComponent extends React.Component {
     super(props);
     this.state = {
         amount: 0,
-        expenseTypes: []
+        expenseTypes: ["Test 1", "Test2"]
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.testApi = this.testApi.bind(this);
   }
 
   handleChange(event) {
@@ -21,14 +22,17 @@ class MainComponent extends React.Component {
     this.setState({ ...this.state, amount: result });
   };
 
-  // TODO: remove
-  testApi = () =>  {
-    testApiCall();
-  };
+  getExpenseTypes = () => {
+    getExpenseCategories();
+  }
 
   componentDidMount = () => {
     console.log('component did mount');
-    this.testApi();
+
+    axios.get("https://localhost:7284/api/expenses/expenseCategories")
+      .then(result => {
+        this.setState({ expenseTypes: result.data })
+      });
   };
   
   render() {
@@ -43,11 +47,14 @@ class MainComponent extends React.Component {
             onChange={this.handleChange}
         />
 
-        <input 
-            type="button"
-            value="tester"
-            onClick={this.testApi}
-        />
+        <br />
+        <select name="selectList" id="selectList">
+            { 
+              this.state.expenseTypes.map(type => (
+                  <option value="type"> { type } </option>
+              ))
+            }
+        </select>
         </div>
     );
   }
