@@ -37,6 +37,10 @@ namespace server.Controllers
         [HttpPost("add-expense")]
         public IActionResult PostNewExpense(Expense expense)
         {
+            _logger.LogInformation("Received post request, expense = " + 
+                expense.category + " , " + 
+                expense.amount
+            );
             // Validate category
             if(!ExpenseCategories.Contains(expense.category))
             {
