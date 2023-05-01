@@ -10,17 +10,23 @@ class MainComponent extends React.Component {
     super(props);
     this.state = {
         amount: 0,
-        expenseTypes: ["Test 1", "Test2"]
+        expenseTypes: ["Test 1", "Test2"],
+        selectedType: null
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleAmountChange = this.handleAmountChange.bind(this);
+    this.handleCategoryChange = this.handleCategoryChange.bind(this);
   }
 
-  handleChange(event) {
+  handleAmountChange(event) {
     const result = event.target.value.replace(/\D/g, '');
 
     this.setState({ ...this.state, amount: result });
   };
+
+  handleCategoryChange(event) {
+    this.setState({ ...this.state, selectedType: event.target.value });
+  }
 
   getExpenseTypes = () => {
     getExpenseCategories();
@@ -35,6 +41,23 @@ class MainComponent extends React.Component {
       });
   };
   
+  postExpense = () => {
+    console.log('got expense amount = ', this.state.amount);
+
+    let expenseFormatted = {
+      "category": this.state.selectedType,
+      "amount": this.state.amount
+    };
+
+    axios.post("https://localhost:7284/api/expenses/add-expense", expenseFormatted)
+      .then(res => {
+        console.log('Got response = ', res);
+      })
+      .catch(err => {
+        console.log('Got error = ', err);
+      })
+  }
+
   render() {
     return(
         <div className="App">
@@ -44,17 +67,18 @@ class MainComponent extends React.Component {
             type="text"
             placeholder="Amount"
             // value={state.amount}
-            onChange={this.handleChange}
+            onChange={this.handleAmountChange}
         />
 
         <br />
-        <select name="selectList" id="selectList">
+        <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
             { 
               this.state.expenseTypes.map(type => (
-                  <option value="type"> { type } </option>
+                  <option value={this.state.selectedType}> { type } </option>
               ))
             }
         </select>
+        <input type="button" value="Submit" onClick={() => this.postExpense()}/>
         </div>
     );
   }
