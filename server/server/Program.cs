@@ -1,5 +1,21 @@
 var builder = WebApplication.CreateBuilder(args);
 
+var MyOrigins = "local_testing";
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy(name: MyOrigins,
+                      builder =>
+                      {
+                          builder.WithOrigins("http://localhost:3000",
+                                              "https://localhost:3000")
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod()
+                                 .AllowCredentials();
+
+                      });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -17,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyOrigins);
 
 app.UseAuthorization();
 
