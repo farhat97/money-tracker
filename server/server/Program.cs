@@ -1,3 +1,5 @@
+using server.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var MyOrigins = "local_testing";
@@ -22,6 +24,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Read about registering services <--
+builder.Services.AddScoped<IMongoService, MongoService>();
 
 var app = builder.Build();
 
