@@ -40,7 +40,7 @@ namespace server.Controllers
         }
 
         [HttpPost("add-expense")]
-        public IActionResult PostNewExpense(Expense expense)
+        public async Task<IActionResult> PostNewExpense(Expense expense)
         {
             _logger.LogInformation("Received post request, expense = " + 
                 expense.category + " , " + 
@@ -53,12 +53,10 @@ namespace server.Controllers
                 return BadRequest("Invalid expense category");
             }
 
-            this.mongoService.PostNewExpense(expense);
-
             // Call mongo service
-            return Ok(this.mongoService.testFunction(expense));
-
-            // return Ok(expense);
+            // TODO: do some form of trycatch to handle errors
+            await this.mongoService.PostNewExpense(expense);
+            return Ok(expense);
         }
     }
 }

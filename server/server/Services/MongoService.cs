@@ -37,22 +37,19 @@ namespace server.Services
             }
         }
 
-        public void PostNewExpense(Expense expense) 
+        public async Task PostNewExpense(Expense expense) 
         {
             var settings = MongoClientSettings.FromConnectionString(Keys.MONGO_CONNECTION_URI);
             var client = new MongoClient(settings);
 
-            var database = client.GetDatabase("money-tracker");
-            var collection = database.GetCollection<BsonDocument>("Main");
+            var database = client.GetDatabase("daily-expenses");
+            var collection = database.GetCollection<BsonDocument>("expenses");
 
-            Console.WriteLine("Got collection = " + collection.ToString);
+            var expenseBson = expense.ToBsonDocument();
 
-            var expenseToBson = expense.ToBsonDocument();
-
-            Console.WriteLine("Expense to bson = " + expenseToBson);
+            Console.WriteLine("Expense to bson = " + expenseBson);
             
-
-            // collection.InsertOneAsync()
+            await collection.InsertOneAsync(expenseBson);
         }
     }
 }

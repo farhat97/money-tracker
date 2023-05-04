@@ -6,6 +6,6 @@ namespace server.Services
     {
         public Expense testFunction(Expense expense);
 
-        public void PostNewExpense(Expense expense);
+        public Task PostNewExpense(Expense expense);
     }
 }
