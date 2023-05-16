@@ -39,6 +39,7 @@ namespace server.Controllers
             return Ok(ExpenseCategories);
         }
 
+        // TODO: add date field to Expense
         [HttpPost("add-expense")]
         public async Task<IActionResult> PostNewExpense(Expense expense)
         {
@@ -54,9 +55,16 @@ namespace server.Controllers
             }
 
             // Call mongo service
-            // TODO: do some form of trycatch to handle errors
-            await this.mongoService.PostNewExpense(expense);
-            return Ok(expense);
+            try
+            {
+               await this.mongoService.PostNewExpense(expense);
+               return Ok("Expense created");
+            }
+            catch(Exception e) 
+            {
+                _logger.LogWarning("error found - " + e);
+                return BadRequest();
+            }
         }
     }
 }
