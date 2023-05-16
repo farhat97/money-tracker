@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.Models;
+using server.Services;
 
 namespace server.Controllers
 {
@@ -7,6 +8,8 @@ namespace server.Controllers
     [ApiController]
     public class ExpensesController : ControllerBase
     {
+        private readonly IMongoService mongoService;
+
         private static List<string> ExpenseCategories = new List<string>()
         {
             "Grocery",
@@ -23,9 +26,11 @@ namespace server.Controllers
 
         private readonly ILogger<ExpensesController> _logger;
 
-        public ExpensesController(ILogger<ExpensesController> logger)
+        public ExpensesController(ILogger<ExpensesController> logger,
+                                  IMongoService mongoService)
         {
             _logger = logger;
+            this.mongoService = mongoService;
         }
 
         [HttpGet("expenseCategories")]
@@ -34,20 +39,32 @@ namespace server.Controllers
             return Ok(ExpenseCategories);
         }
 
+        // TODO: add date field to Expense
         [HttpPost("add-expense")]
-        public IActionResult PostNewExpense(Expense expense)
+        public async Task<IActionResult> PostNewExpense(Expense expense)
         {
             _logger.LogInformation("Received post request, expense = " + 
                 expense.category + " , " + 
                 expense.amount
             );
+            
             // Validate category
             if(!ExpenseCategories.Contains(expense.category))
             {
                 return BadRequest("Invalid expense category");
             }
 
-            return Ok(expense);
+            // Call mongo service
+            try
+            {
+               await this.mongoService.PostNewExpense(expense);
+               return Ok("Expense created");
+            }
+            catch(Exception e) 
+            {
+                _logger.LogWarning("error found - " + e);
+                return BadRequest();
+            }
         }
     }
 }
