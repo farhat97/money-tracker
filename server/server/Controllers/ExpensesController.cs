@@ -46,18 +46,18 @@ namespace server.Controllers
                 expense.category + " , " + 
                 expense.amount
             );
-
-            // Add current DateTime to expense
-            expense.date = DateTime.Now;
-            _logger.LogInformation("Expense datetime = " + 
-                expense.date
-            );
             
             // Validate category
             if(!ExpenseCategories.Contains(expense.category))
             {
                 return BadRequest("Invalid expense category");
             }
+
+            // Add current DateTime to expense
+            expense.date = DateTime.Now;
+            _logger.LogInformation("Expense datetime = " + 
+                expense.date
+            );
 
             // Call mongo service
             try
