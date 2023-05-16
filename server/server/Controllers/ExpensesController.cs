@@ -39,13 +39,18 @@ namespace server.Controllers
             return Ok(ExpenseCategories);
         }
 
-        // TODO: add date field to Expense
         [HttpPost("add-expense")]
         public async Task<IActionResult> PostNewExpense(Expense expense)
         {
             _logger.LogInformation("Received post request, expense = " + 
                 expense.category + " , " + 
                 expense.amount
+            );
+
+            // Add current DateTime to expense
+            expense.date = DateTime.Now;
+            _logger.LogInformation("Expense datetime = " + 
+                expense.date
             );
             
             // Validate category
