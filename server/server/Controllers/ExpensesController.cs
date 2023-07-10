@@ -39,7 +39,6 @@ namespace server.Controllers
             return Ok(ExpenseCategories);
         }
 
-        // TODO: add date field to Expense
         [HttpPost("add-expense")]
         public async Task<IActionResult> PostNewExpense(Expense expense)
         {
@@ -53,6 +52,12 @@ namespace server.Controllers
             {
                 return BadRequest("Invalid expense category");
             }
+
+            // Add current DateTime to expense
+            expense.date = DateTime.Now;
+            _logger.LogInformation("Expense datetime = " + 
+                expense.date
+            );
 
             // Call mongo service
             try
