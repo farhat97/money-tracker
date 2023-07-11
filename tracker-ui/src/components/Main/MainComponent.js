@@ -25,6 +25,7 @@ class MainComponent extends React.Component {
   };
 
   handleCategoryChange(event) {
+    console.log('logging event = ', event);
     this.setState({ ...this.state, selectedType: event.target.value });
   }
 
@@ -75,7 +76,7 @@ class MainComponent extends React.Component {
         <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
             { 
               this.state.expenseTypes.map(type => (
-                  <option value={this.state.selectedType}> { type } </option>
+                  <option value={ type }> { type } </option>
               ))
             }
         </select>
