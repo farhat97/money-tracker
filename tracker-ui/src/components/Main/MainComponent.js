@@ -35,9 +35,10 @@ class MainComponent extends React.Component {
   componentDidMount = () => {
     console.log('component did mount');
 
-    axios.get("https://localhost:7284/api/expenses/expenseCategories")
+    axios.get("http://localhost:5284/api/expenses/expense-categories")
       .then(result => {
-        this.setState({ expenseTypes: result.data })
+        this.setState({ expenseTypes: result.data });
+        this.setState({ selectedType: result.data[0] });
       });
   };
   
@@ -49,7 +50,7 @@ class MainComponent extends React.Component {
       "amount": this.state.amount
     };
 
-    axios.post("https://localhost:7284/api/expenses/add-expense", expenseFormatted)
+    axios.post("http://localhost:5284/api/expenses/add-expense", expenseFormatted)
       .then(res => {
         console.log('Got response = ', res);
       })
