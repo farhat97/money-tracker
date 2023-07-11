@@ -42,7 +42,8 @@ class MainComponent extends React.Component {
 
     axios.get("https://7131-2601-243-2200-ee50-5073-c865-87f7-8e79.ngrok-free.app/api/expenses/expense-categories", this.state.axiosOptions)
       .then(result => {
-        this.setState({ expenseTypes: result.data })
+        this.setState({ expenseTypes: result.data });
+        this.setState({ selectedType: result.data[0] });
       });
   };
   
@@ -79,7 +80,7 @@ class MainComponent extends React.Component {
         <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
             { 
               this.state.expenseTypes.map(type => (
-                  <option value={this.state.selectedType}> { type } </option>
+                  <option value={ type }> { type } </option>
               ))
             }
         </select>
