@@ -11,7 +11,12 @@ class MainComponent extends React.Component {
     this.state = {
         amount: 0,
         expenseTypes: ["Test 1", "Test2"],
-        selectedType: null
+        selectedType: null,
+        axiosOptions: {
+          headers: {
+            "ngrok-skip-browser-warning": true,
+          }
+        }
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -35,7 +40,7 @@ class MainComponent extends React.Component {
   componentDidMount = () => {
     console.log('component did mount');
 
-    axios.get("https://localhost:7284/api/expenses/expenseCategories")
+    axios.get("https://7131-2601-243-2200-ee50-5073-c865-87f7-8e79.ngrok-free.app/api/expenses/expense-categories", this.state.axiosOptions)
       .then(result => {
         this.setState({ expenseTypes: result.data })
       });
@@ -49,7 +54,7 @@ class MainComponent extends React.Component {
       "amount": this.state.amount
     };
 
-    axios.post("https://localhost:7284/api/expenses/add-expense", expenseFormatted)
+    axios.post("https://7131-2601-243-2200-ee50-5073-c865-87f7-8e79.ngrok-free.app/api/expenses/add-expense", expenseFormatted, this.state.axiosOptions)
       .then(res => {
         console.log('Got response = ', res);
       })

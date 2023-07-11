@@ -33,7 +33,7 @@ namespace server.Controllers
             this.mongoService = mongoService;
         }
 
-        [HttpGet("expenseCategories")]
+        [HttpGet("expense-categories")]
         public IActionResult GetExpenseCategories()
         {
             return Ok(ExpenseCategories);
