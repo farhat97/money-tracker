@@ -25,7 +25,6 @@ class MainComponent extends React.Component {
   };
 
   handleCategoryChange(event) {
-    console.log('logging event = ', event);
     this.setState({ ...this.state, selectedType: event.target.value });
   }
 
