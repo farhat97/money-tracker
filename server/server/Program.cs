@@ -1,6 +1,19 @@
+using Newtonsoft.Json.Linq;
 using server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Get ngrok uri to add it to the cors policy
+var ngrokTunnelsString = File.ReadAllText("ngrok-tunnels.json");
+var tunnelsObject = JObject.Parse(ngrokTunnelsString);
+
+var clientTunnelObject = 
+    JObject.Parse(
+            tunnelsObject["tunnels"].Where(tunnel => (string)tunnel["name"] == "client").First().ToString()
+        );
+Console.WriteLine("Client Tunnel = " + clientTunnelObject);
+
+String serverTunnel = clientTunnelObject.SelectToken("public_url").Value<String>();
 
 var MyOrigins = "local_testing";
 
@@ -10,7 +23,8 @@ builder.Services.AddCors(options =>
                       builder =>
                       {
                           builder.WithOrigins("http://localhost:3000",
-                                              "https://localhost:3000")
+                                              "https://localhost:3000",
+                                              serverTunnel)
                                  .AllowAnyHeader()
                                  .AllowAnyMethod()
                                  .AllowCredentials();
