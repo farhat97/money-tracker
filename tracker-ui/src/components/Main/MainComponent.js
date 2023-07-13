@@ -4,6 +4,8 @@ import { getExpenseCategories } from '../../services/serverService';
 
 import axios from 'axios';
 
+import tunnels from '../../ngrok-tunnels.json';
+
 class MainComponent extends React.Component {
 
   constructor(props) {
@@ -12,6 +14,7 @@ class MainComponent extends React.Component {
         amount: 0,
         expenseTypes: ["Test 1", "Test2"],
         selectedType: null,
+        serverUrl: "",
         axiosOptions: {
           headers: {
             "ngrok-skip-browser-warning": true,
@@ -38,15 +41,20 @@ class MainComponent extends React.Component {
   }
 
   componentDidMount = () => {
-    console.log('component did mount');
+    
+    // Get server uri (generated when running ngrok and populating ngrok-tunnels.json)
+    let clientTunnel = tunnels.tunnels.filter(tunnel => tunnel.name === "server");
+    // console.log('client tunnel stuff = ', clientTunnel[0].public_url);
+    // NOTE: using setState here does not work
+    this.state.serverUrl = clientTunnel[0].public_url;
 
-    axios.get("https://7131-2601-243-2200-ee50-5073-c865-87f7-8e79.ngrok-free.app/api/expenses/expense-categories", this.state.axiosOptions)
+    axios.get(this.state.serverUrl + "/api/expenses/expense-categories", this.state.axiosOptions)
       .then(result => {
         this.setState({ expenseTypes: result.data });
         this.setState({ selectedType: result.data[0] });
       });
   };
-  
+
   postExpense = () => {
     console.log('got expense amount = ', this.state.amount);
 
@@ -55,9 +63,10 @@ class MainComponent extends React.Component {
       "amount": this.state.amount
     };
 
-    axios.post("https://7131-2601-243-2200-ee50-5073-c865-87f7-8e79.ngrok-free.app/api/expenses/add-expense", expenseFormatted, this.state.axiosOptions)
+    axios.post(this.state.serverUrl + "/api/expenses/add-expense", expenseFormatted, this.state.axiosOptions)
       .then(res => {
         console.log('Got response = ', res);
+        // TODO: add a success flag for UI feedback
       })
       .catch(err => {
         console.log('Got error = ', err);
