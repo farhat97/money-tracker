@@ -10,9 +10,18 @@ namespace server.Services
     {
         private HttpClient httpClient;
 
+        private static readonly MongoClientSettings mongoSettings = MongoClientSettings.FromConnectionString(Keys.MONGO_CONNECTION_URI);
+        private static readonly MongoClient mongoClient = new MongoClient(mongoSettings);
+
+        private IMongoDatabase mongoDatabase;
+        private IMongoCollection<BsonDocument> dbCollection;
+
+
         public MongoService()
         {
             // this.httpClient = client;
+            this.mongoDatabase = mongoClient.GetDatabase("daily-expenses");
+            this.dbCollection = mongoDatabase.GetCollection<BsonDocument>("expenses");
         }
 
         public Expense testFunction(Expense expense)
@@ -42,14 +51,16 @@ namespace server.Services
             var settings = MongoClientSettings.FromConnectionString(Keys.MONGO_CONNECTION_URI);
             var client = new MongoClient(settings);
 
-            var database = client.GetDatabase("daily-expenses");
-            var collection = database.GetCollection<BsonDocument>("expenses");
-
             var expenseBson = expense.ToBsonDocument();
 
             Console.WriteLine("Expense to bson = " + expenseBson);
             
-            await collection.InsertOneAsync(expenseBson);
+            await this.dbCollection.InsertOneAsync(expenseBson);
         }
+
+        // public async Expense GetMonthExpenses()
+        // {
+        //     // filter example: { date : { $gte: ISODate('2023-08-01'), $lte: ISODate('2023-08-31') } }
+        // }
     }
 }
