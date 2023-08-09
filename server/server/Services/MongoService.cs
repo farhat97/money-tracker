@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using server.Models;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using server.Resources;
+using System.Text.Json;
 
 namespace server.Services
 {
@@ -14,14 +14,14 @@ namespace server.Services
         private static readonly MongoClient mongoClient = new MongoClient(mongoSettings);
 
         private IMongoDatabase mongoDatabase;
-        private IMongoCollection<BsonDocument> dbCollection;
+        private IMongoCollection<Expense> dbCollection;
 
 
         public MongoService()
         {
             // this.httpClient = client;
             this.mongoDatabase = mongoClient.GetDatabase("daily-expenses");
-            this.dbCollection = mongoDatabase.GetCollection<BsonDocument>("expenses");
+            this.dbCollection = mongoDatabase.GetCollection<Expense>("expenses");
         }
 
         public Expense testFunction(Expense expense)
@@ -51,11 +51,9 @@ namespace server.Services
             var settings = MongoClientSettings.FromConnectionString(Keys.MONGO_CONNECTION_URI);
             var client = new MongoClient(settings);
 
-            var expenseBson = expense.ToBsonDocument();
-
-            Console.WriteLine("Expense to bson = " + expenseBson);
+            Console.WriteLine("Expense to string = " + JsonSerializer.Serialize(expense));
             
-            await this.dbCollection.InsertOneAsync(expenseBson);
+            await this.dbCollection.InsertOneAsync(expense);
         }
 
         // public async Expense GetMonthExpenses()
