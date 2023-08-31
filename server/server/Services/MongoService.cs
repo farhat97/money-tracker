@@ -56,9 +56,27 @@ namespace server.Services
             await this.dbCollection.InsertOneAsync(expense);
         }
 
-        // public async Expense GetMonthExpenses()
-        // {
-        //     // filter example: { date : { $gte: ISODate('2023-08-01'), $lte: ISODate('2023-08-31') } }
-        // }
+        public void GetMonthExpenses()
+        {
+            // // filter example: { date : { $gte: ISODate('2023-08-01'), $lte: ISODate('2023-08-31') } }
+            // Console.WriteLine("Date time for aug = " + new DateTime(2023, 08, 01));
+            // var filter = 
+            //     Builders<Expense>.Filter.Gte(expense => 
+            //         expense.Date, DateTime.Now);
+
+            // var expenses =
+            //     // this.dbCollection.Find(
+            //     //     expense => expense.Date >= new DateTime(2023, 08, 01) && 
+            //     //                expense.Date <= new DateTime(2023, 08, 31)
+            //     // ).ToList();
+            //     this.dbCollection.Find(filter).ToList();
+            
+            // // Console.WriteLine("Got expenses =\n" + JsonSerializer.Serialize(expenses));
+            // Console.WriteLine("Got expenses =\n");
+            // foreach(var ex in expenses)
+            // {
+            //     Console.WriteLine(ex.Category + " - " + ex.Amount + " on " + ex.Date);
+            // }
+        }
     }
 }
