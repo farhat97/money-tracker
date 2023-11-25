@@ -76,7 +76,7 @@ namespace server.Controllers
         public IActionResult GetMonthlyExpenses() 
         {
             this.mongoService.GetMonthExpenses();
-            return Ok("Generic msg");
+            return Ok("");
         }
     }
 }

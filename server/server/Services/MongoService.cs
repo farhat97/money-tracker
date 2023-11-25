@@ -56,27 +56,38 @@ namespace server.Services
             await this.dbCollection.InsertOneAsync(expense);
         }
 
+        // Call the first of every month to generate get all expenses for the previous month
         public void GetMonthExpenses()
         {
-            // // filter example: { date : { $gte: ISODate('2023-08-01'), $lte: ISODate('2023-08-31') } }
-            // Console.WriteLine("Date time for aug = " + new DateTime(2023, 08, 01));
-            // var filter = 
-            //     Builders<Expense>.Filter.Gte(expense => 
-            //         expense.Date, DateTime.Now);
+            // filter example: { date : { $gte: ISODate('2023-08-01'), $lte: ISODate('2023-08-31') } }
 
-            // var expenses =
-            //     // this.dbCollection.Find(
-            //     //     expense => expense.Date >= new DateTime(2023, 08, 01) && 
-            //     //                expense.Date <= new DateTime(2023, 08, 31)
-            //     // ).ToList();
-            //     this.dbCollection.Find(filter).ToList();
+            DateTime dateObj = DateTime.Now;
+            Console.WriteLine("dateobj example. Month = " + dateObj.Month + "\nDaysInMonth = " + 
+                DateTime.DaysInMonth(DateTime.Now.Year, 2));
+
+            DateTime today = DateTime.Now;
+
+            // If this call happens in January, assign month to 12 (December)
+            int previousMonth = today.Month == 1 ? 12 : today.Month - 1;
+            // Same with current year. If January, assign currentYear to last year
+            int currentYear = today.Month == 1 ? DateTime.Now.AddYears(-1).Year : DateTime.Now.Year;
             
-            // // Console.WriteLine("Got expenses =\n" + JsonSerializer.Serialize(expenses));
-            // Console.WriteLine("Got expenses =\n");
-            // foreach(var ex in expenses)
-            // {
-            //     Console.WriteLine(ex.Category + " - " + ex.Amount + " on " + ex.Date);
-            // }
+            var filter =
+                Builders<Expense>.Filter.Gte(expense =>
+                    expense.Date, DateTime.Now);
+
+            var expenses =
+                 this.dbCollection.Find(
+                     expense => expense.Date >= new DateTime(currentYear, previousMonth, 01) &&
+                                expense.Date <= 
+                                    new DateTime(currentYear, previousMonth, DateTime.DaysInMonth(currentYear, previousMonth))
+                 ).ToList();
+
+            Console.WriteLine("Got expenses =\n");
+            foreach (var ex in expenses)
+            {
+                Console.WriteLine(ex.Category + " - " + ex.Amount + " on " + ex.Date);
+            }
         }
     }
 }
