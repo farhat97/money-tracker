@@ -5,14 +5,29 @@ const serverApiClient = axios.create({
     baseURL: serverBaseUrl
 });
 
-export function getExpenseCategories() {
-    console.log('getting expense categories');
-    serverApiClient.get("/api/expenses/expenseCategories")
-        .then((result) => {
-            console.log('expense categories = ', result.data);
-            return result?.data;
-        })
-        .catch((err) => {
-            console.log('error getting categories ', err)
-        });
+const getExpenseCategories = async () => {
+    // serverApiClient.get("/api/expenses/expense-categories")
+    //     .then((result) => {
+    //         console.log('expense categories = ', result.data);
+    //         return result?.data;
+    //     })
+    //     .catch((err) => {
+    //         console.log('error getting categories ', err)
+    //     });
+    
+    try {
+        const response = await serverApiClient.get("/api/expenses/expense-categories");
+        return response.data;
+    } catch(error) {
+        throw error;
+    }
+
+    // return [
+    //     "Grocery",
+    //     "Zeus",
+    //     "Misc",
+    //     "Eating out"
+    // ];
 }
+
+export { getExpenseCategories };

@@ -1,4 +1,4 @@
-import {useState, setState} from 'react';
+import {useState, setState, useEffect} from 'react';
 import React from 'react';
 import { getExpenseCategories } from '../../services/serverService';
 
@@ -35,9 +35,14 @@ class MainComponent extends React.Component {
   handleCategoryChange(event) {
     this.setState({ ...this.state, selectedType: event.target.value });
   }
-
-  getExpenseTypes = () => {
-    getExpenseCategories();
+  
+  async test() {
+    try {
+      const response = await getExpenseCategories();
+      this.setState({ expenseTypes: response });
+    } catch(error) {
+      console.log('error retrieving categories', error);
+    }
   }
 
   componentDidMount = () => {
@@ -46,14 +51,18 @@ class MainComponent extends React.Component {
     let clientTunnel = tunnels.tunnels.filter(tunnel => tunnel.name === "server");
     // console.log('client tunnel stuff = ', clientTunnel[0].public_url);
     // NOTE: using setState here does not work
-    this.state.serverUrl = clientTunnel[0].public_url;
-
-    axios.get(this.state.serverUrl + "/api/expenses/expense-categories", this.state.axiosOptions)
-      .then(result => {
-        this.setState({ expenseTypes: result.data });
-        this.setState({ selectedType: result.data[0] });
-      });
+    
+    // this.state.serverUrl = clientTunnel[0].public_url;
+    this.state.serverUrl = "http://localhost:5284";
+    
+    // axios.get(this.state.serverUrl + "/api/expenses/expense-categories", this.state.axiosOptions)
+    //   .then(result => {
+    //     this.setState({ expenseTypes: result.data });
+    //     this.setState({ selectedType: result.data[0] });
+    //   });
+    this.test();
   };
+
 
   postExpense = () => {
     console.log('got expense amount = ', this.state.amount);
