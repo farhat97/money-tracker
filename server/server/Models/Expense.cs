@@ -1,11 +1,16 @@
-﻿namespace server.Models
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace server.Models
 {
+    [BsonIgnoreExtraElements]
     public class Expense
     {
-        public double amount { get; set; }
+        // public int Id { get; set; }
 
-        public string category { get; set; }
+        public double Amount { get; set; }
 
-        public DateTime date { get; set; }
+        public string Category { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }

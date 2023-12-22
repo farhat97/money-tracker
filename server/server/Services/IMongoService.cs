@@ -7,5 +7,7 @@ namespace server.Services
         public Expense testFunction(Expense expense);
 
         public Task PostNewExpense(Expense expense);
+
+        public void GetMonthExpenses();
     }
 }
