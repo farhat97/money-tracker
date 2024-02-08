@@ -1,10 +1,6 @@
-import {useState, setState, useEffect} from 'react';
 import React from 'react';
-import { getExpenseCategories } from '../../services/serverService';
+import { getExpenseCategories, postNewExpense } from '../../services/serverService';
 
-import axios from 'axios';
-
-import tunnels from '../../ngrok-tunnels.json';
 
 class MainComponent extends React.Component {
 
@@ -14,12 +10,7 @@ class MainComponent extends React.Component {
         amount: 0,
         expenseTypes: ["Test 1", "Test2"],
         selectedType: null,
-        serverUrl: "",
-        axiosOptions: {
-          headers: {
-            "ngrok-skip-browser-warning": true,
-          }
-        }
+        serverUrl: ""
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -36,7 +27,7 @@ class MainComponent extends React.Component {
     this.setState({ ...this.state, selectedType: event.target.value });
   }
   
-  async test() {
+  async getExpenseCategoriesAsync() {
     try {
       const response = await getExpenseCategories();
       this.setState({ expenseTypes: response });
@@ -45,22 +36,17 @@ class MainComponent extends React.Component {
     }
   }
 
+  async postNewExpenseAsync(expense) {
+    try {
+      const response = await postNewExpense(expense);
+    } catch(error) {
+      console.log('error posting expense = ', error);
+    }
+  }
+
   componentDidMount = () => {
-    
-    // Get server uri (generated when running ngrok and populating ngrok-tunnels.json)
-    let clientTunnel = tunnels.tunnels.filter(tunnel => tunnel.name === "server");
-    // console.log('client tunnel stuff = ', clientTunnel[0].public_url);
-    // NOTE: using setState here does not work
-    
-    // this.state.serverUrl = clientTunnel[0].public_url;
-    this.state.serverUrl = "http://localhost:5284";
-    
-    // axios.get(this.state.serverUrl + "/api/expenses/expense-categories", this.state.axiosOptions)
-    //   .then(result => {
-    //     this.setState({ expenseTypes: result.data });
-    //     this.setState({ selectedType: result.data[0] });
-    //   });
-    this.test();
+
+    this.getExpenseCategoriesAsync();
   };
 
 
@@ -68,18 +54,12 @@ class MainComponent extends React.Component {
     console.log('got expense amount = ', this.state.amount);
 
     let expenseFormatted = {
-      "category": this.state.selectedType,
-      "amount": this.state.amount
+      "Category": this.state.selectedType,
+      "Amount": this.state.amount
     };
 
-    axios.post(this.state.serverUrl + "/api/expenses/add-expense", expenseFormatted, this.state.axiosOptions)
-      .then(res => {
-        console.log('Got response = ', res);
-        // TODO: add a success flag for UI feedback
-      })
-      .catch(err => {
-        console.log('Got error = ', err);
-      })
+    this.postNewExpenseAsync(expenseFormatted);
+    
   }
 
   render() {
