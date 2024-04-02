@@ -1,6 +1,9 @@
 import React from 'react';
 import { getExpenseCategories, postNewExpense } from '../../services/serverService';
 
+import CategoryCardComponent from './category-card/CategoryCardComponent';
+import Button from 'react-bootstrap/Button';
+
 
 class MainComponent extends React.Component {
 
@@ -10,7 +13,8 @@ class MainComponent extends React.Component {
         amount: 0,
         expenseTypes: ["Test 1", "Test2"],
         selectedType: null,
-        serverUrl: ""
+        serverUrl: "",
+        categoryButtonVariant: "outline-secondary"
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -62,9 +66,14 @@ class MainComponent extends React.Component {
     
   }
 
+  handleCategoryClick = (event) => {
+    console.log('clickeddd', event);
+    console.log(event.target.innerText);
+  }
+
   render() {
     return(
-        <div className="App">
+      <div className="App">
         <h3> Money Tracker </h3>
         
         <input
@@ -75,15 +84,33 @@ class MainComponent extends React.Component {
         />
 
         <br />
-        <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
+        {/* <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
             { 
               this.state.expenseTypes.map(type => (
                   <option value={ type }> { type } </option>
               ))
             }
-        </select>
-        <input type="button" value="Submit" onClick={() => this.postExpense()}/>
+        </select> */}
+
+        {/* <div>
+          {
+            this.state.expenseTypes.map(type => (
+              <Button variant={this.state.categoryButtonVariant} size="lg" onClick={this.handleCategoryClick}>
+                { type }
+              </Button>  
+            ))
+          }
+        </div> */}
+        <div>
+          {
+            this.state.expenseTypes.map(type => (
+              <CategoryCardComponent type={type} test = "test2" />
+            ))
+          }
         </div>
+
+        <input type="button" value="Submit" onClick={() => this.postExpense()}/>
+      </div>
     );
   }
 }
