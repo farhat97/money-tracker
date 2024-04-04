@@ -1,7 +1,7 @@
 import React from 'react';
 import { getExpenseCategories, postNewExpense } from '../../services/serverService';
 
-import CategoryCardComponent from './category-card/CategoryCardComponent';
+import CategoryCardComponent from '../category-card/CategoryCardComponent';
 import Button from 'react-bootstrap/Button';
 
 
@@ -104,7 +104,7 @@ class MainComponent extends React.Component {
         <div>
           {
             this.state.expenseTypes.map(type => (
-              <CategoryCardComponent type={type} test = "test2" />
+              <CategoryCardComponent type={type} test="test2" />
             ))
           }
         </div>
