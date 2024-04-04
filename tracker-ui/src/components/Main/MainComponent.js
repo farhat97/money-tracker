@@ -71,7 +71,19 @@ class MainComponent extends React.Component {
     console.log(event.target.innerText);
   }
 
+  handleTypeSelect = (typeSelected) => {
+    console.log('got type selected = ', typeSelected);
+    this.setState({ selectedType: typeSelected });
+  }
+
   render() {
+    const expenseCards = this.state.expenseTypes.map(type => (
+      <CategoryCardComponent 
+        type={type}
+        selected={type === this.state.selectedType}
+        onTypeSelect={this.handleTypeSelect}
+      />
+    ));
     return(
       <div className="App">
         <h3> Money Tracker </h3>
@@ -84,29 +96,8 @@ class MainComponent extends React.Component {
         />
 
         <br />
-        {/* <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
-            { 
-              this.state.expenseTypes.map(type => (
-                  <option value={ type }> { type } </option>
-              ))
-            }
-        </select> */}
-
-        {/* <div>
-          {
-            this.state.expenseTypes.map(type => (
-              <Button variant={this.state.categoryButtonVariant} size="lg" onClick={this.handleCategoryClick}>
-                { type }
-              </Button>  
-            ))
-          }
-        </div> */}
         <div>
-          {
-            this.state.expenseTypes.map(type => (
-              <CategoryCardComponent type={type} test="test2" />
-            ))
-          }
+          { expenseCards }
         </div>
 
         <input type="button" value="Submit" onClick={() => this.postExpense()}/>
