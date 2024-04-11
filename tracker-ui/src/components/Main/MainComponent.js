@@ -2,7 +2,7 @@ import React from 'react';
 import { getExpenseCategories, postNewExpense } from '../../services/serverService';
 
 import CategoryCardComponent from '../category-card/CategoryCardComponent';
-import Button from 'react-bootstrap/Button';
+import { ThreeDots } from 'react-loader-spinner';
 
 
 class MainComponent extends React.Component {
@@ -14,7 +14,8 @@ class MainComponent extends React.Component {
         expenseTypes: ["Test 1", "Test2"],
         selectedType: null,
         serverUrl: "",
-        categoryButtonVariant: "outline-secondary"
+        categoryButtonVariant: "outline-secondary",
+        isLoading: true
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -30,21 +31,25 @@ class MainComponent extends React.Component {
   handleCategoryChange(event) {
     this.setState({ ...this.state, selectedType: event.target.value });
   }
-  
+  expenseCardsSection
   async getExpenseCategoriesAsync() {
     try {
       const response = await getExpenseCategories();
       this.setState({ expenseTypes: response });
+      this.setState({ isLoading: false });
     } catch(error) {
       console.log('error retrieving categories', error);
+      this.setState({ isLoading: false });
     }
   }
 
   async postNewExpenseAsync(expense) {
     try {
       const response = await postNewExpense(expense);
+      this.setState({ isLoading: false });
     } catch(error) {
       console.log('error posting expense = ', error);
+      this.setState({ isLoading: false });
     }
   }
 
@@ -55,6 +60,7 @@ class MainComponent extends React.Component {
 
 
   postExpense = () => {
+    this.setState({ isLoading: true });
     console.log('got expense amount = ', this.state.amount);
 
     let expenseFormatted = {
@@ -77,27 +83,37 @@ class MainComponent extends React.Component {
   }
 
   render() {
-    const expenseCards = this.state.expenseTypes.map(type => (
+    const expenseCardsSection = this.state.expenseTypes.map(type => (
       <CategoryCardComponent 
         type={type}
         selected={type === this.state.selectedType}
         onTypeSelect={this.handleTypeSelect}
       />
     ));
+
     return(
       <div className="App">
-        <h3> Money Tracker </h3>
+        <h3> Que onda </h3>
         
         <input
-            type="text"
+            type="number"
+            pattern="[0-9]*"
             placeholder="Amount"
-            // value={state.amount}
             onChange={this.handleAmountChange}
         />
 
         <br />
-        <div>
-          { expenseCards }
+        <div className='expense-cards'>
+          { 
+            this.state.isLoading 
+            ? (
+                <ThreeDots 
+                    color="#0d6efd" 
+                    height={80} 
+                    width={80} />
+              )
+            : expenseCardsSection 
+          }
         </div>
 
         <input type="button" value="Submit" onClick={() => this.postExpense()}/>

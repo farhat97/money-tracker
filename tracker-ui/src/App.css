@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+.expense-cards {
+  padding: 1% 45% 1% 45%;
+}
