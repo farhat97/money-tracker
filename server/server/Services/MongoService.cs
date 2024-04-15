@@ -56,8 +56,10 @@ namespace server.Services
             await this.dbCollection.InsertOneAsync(expense);
         }
 
-        // Call the first of every month to generate get all expenses for the previous month
-        public void GetMonthExpenses()
+        /// <summary>
+        /// Call the first of every month to generate get all expenses for the previous month
+        /// </summary>
+        public List<Expense> GetMonthExpenses()
         {
             // filter example: { date : { $gte: ISODate('2023-08-01'), $lte: ISODate('2023-08-31') } }
 
@@ -88,6 +90,8 @@ namespace server.Services
             {
                 Console.WriteLine(ex.Category + " - " + ex.Amount + " on " + ex.Date);
             }
+
+            return expenses;
         }
     }
 }

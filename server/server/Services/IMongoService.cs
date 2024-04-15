@@ -8,6 +8,6 @@ namespace server.Services
 
         public Task PostNewExpense(Expense expense);
 
-        public void GetMonthExpenses();
+        public List<Expense> GetMonthExpenses();
     }
 }

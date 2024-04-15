@@ -62,7 +62,7 @@ namespace server.Controllers
             // Call mongo service
             try
             {
-               await this.mongoService.PostNewExpense(expense);
+               await mongoService.PostNewExpense(expense);
                return Ok("Expense created");
             }
             catch(Exception e) 
@@ -75,8 +75,7 @@ namespace server.Controllers
         [HttpGet("get-monthtly-expenses")]
         public IActionResult GetMonthlyExpenses() 
         {
-            this.mongoService.GetMonthExpenses();
-            return Ok("");
+            return Ok(mongoService.GetMonthExpenses());
         }
     }
 }
