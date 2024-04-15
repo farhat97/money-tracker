@@ -15,7 +15,9 @@ class MainComponent extends React.Component {
         selectedType: null,
         serverUrl: "",
         categoryButtonVariant: "outline-secondary",
-        isLoading: true
+        isLoading: true,
+        showSuccessAlert: false,
+        showErrorAlert: false
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -47,9 +49,11 @@ class MainComponent extends React.Component {
     try {
       const response = await postNewExpense(expense);
       this.setState({ isLoading: false });
+      this.setState({ showSuccessAlert: true });
     } catch(error) {
       console.log('error posting expense = ', error);
       this.setState({ isLoading: false });
+      this.setState({ showErrorAlert: true });
     }
   }
 
@@ -91,9 +95,30 @@ class MainComponent extends React.Component {
       />
     ));
 
+    const successAlert = 
+      <div class="alert alert-success" style={{'margin': '10px 30% 10px 30%'}} role="alert">
+        Expense posted!
+      </div>;
+    const errorAlert =
+      <div class="alert alert-danger" style={{'margin': '10px 30% 10px 30%'}} role="alert">
+        Error posting expense
+      </div>;
+
     return(
       <div className="App">
         <h3> Que onda </h3>
+
+        {/* alerts */}
+        <div> 
+          {
+            this.state.showSuccessAlert && (successAlert)
+          }
+        </div>
+        <div> 
+          {
+            this.state.showErrorAlert && (errorAlert)
+          }
+        </div>
         
         <input
             type="number"
