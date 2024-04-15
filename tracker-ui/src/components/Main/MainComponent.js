@@ -1,10 +1,9 @@
-import {useState, setState} from 'react';
 import React from 'react';
-import { getExpenseCategories } from '../../services/serverService';
+import { getExpenseCategories, postNewExpense } from '../../services/serverService';
 
-import axios from 'axios';
+import CategoryCardComponent from '../category-card/CategoryCardComponent';
+import { ThreeDots } from 'react-loader-spinner';
 
-import tunnels from '../../ngrok-tunnels.json';
 
 class MainComponent extends React.Component {
 
@@ -15,11 +14,10 @@ class MainComponent extends React.Component {
         expenseTypes: ["Test 1", "Test2"],
         selectedType: null,
         serverUrl: "",
-        axiosOptions: {
-          headers: {
-            "ngrok-skip-browser-warning": true,
-          }
-        }
+        categoryButtonVariant: "outline-secondary",
+        isLoading: true,
+        showSuccessAlert: false,
+        showErrorAlert: false
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -35,66 +33,116 @@ class MainComponent extends React.Component {
   handleCategoryChange(event) {
     this.setState({ ...this.state, selectedType: event.target.value });
   }
+  expenseCardsSection
+  async getExpenseCategoriesAsync() {
+    try {
+      const response = await getExpenseCategories();
+      this.setState({ expenseTypes: response });
+      this.setState({ isLoading: false });
+    } catch(error) {
+      console.log('error retrieving categories', error);
+      this.setState({ isLoading: false });
+    }
+  }
 
-  getExpenseTypes = () => {
-    getExpenseCategories();
+  async postNewExpenseAsync(expense) {
+    try {
+      const response = await postNewExpense(expense);
+      this.setState({ isLoading: false });
+      this.setState({ showSuccessAlert: true });
+    } catch(error) {
+      console.log('error posting expense = ', error);
+      this.setState({ isLoading: false });
+      this.setState({ showErrorAlert: true });
+    }
   }
 
   componentDidMount = () => {
-    
-    // Get server uri (generated when running ngrok and populating ngrok-tunnels.json)
-    let clientTunnel = tunnels.tunnels.filter(tunnel => tunnel.name === "server");
-    // console.log('client tunnel stuff = ', clientTunnel[0].public_url);
-    // NOTE: using setState here does not work
-    this.state.serverUrl = clientTunnel[0].public_url;
 
-    axios.get(this.state.serverUrl + "/api/expenses/expense-categories", this.state.axiosOptions)
-      .then(result => {
-        this.setState({ expenseTypes: result.data });
-        this.setState({ selectedType: result.data[0] });
-      });
+    this.getExpenseCategoriesAsync();
   };
 
+
   postExpense = () => {
+    this.setState({ isLoading: true });
     console.log('got expense amount = ', this.state.amount);
 
     let expenseFormatted = {
-      "category": this.state.selectedType,
-      "amount": this.state.amount
+      "Category": this.state.selectedType,
+      "Amount": this.state.amount
     };
 
-    axios.post(this.state.serverUrl + "/api/expenses/add-expense", expenseFormatted, this.state.axiosOptions)
-      .then(res => {
-        console.log('Got response = ', res);
-        // TODO: add a success flag for UI feedback
-      })
-      .catch(err => {
-        console.log('Got error = ', err);
-      })
+    this.postNewExpenseAsync(expenseFormatted);
+    
+  }
+
+  handleCategoryClick = (event) => {
+    console.log('clickeddd', event);
+    console.log(event.target.innerText);
+  }
+
+  handleTypeSelect = (typeSelected) => {
+    console.log('got type selected = ', typeSelected);
+    this.setState({ selectedType: typeSelected });
   }
 
   render() {
+    const expenseCardsSection = this.state.expenseTypes.map(type => (
+      <CategoryCardComponent 
+        type={type}
+        selected={type === this.state.selectedType}
+        onTypeSelect={this.handleTypeSelect}
+      />
+    ));
+
+    const successAlert = 
+      <div class="alert alert-success" style={{'margin': '10px 30% 10px 30%'}} role="alert">
+        Expense posted!
+      </div>;
+    const errorAlert =
+      <div class="alert alert-danger" style={{'margin': '10px 30% 10px 30%'}} role="alert">
+        Error posting expense
+      </div>;
+
     return(
-        <div className="App">
-        <h3> Money Tracker </h3>
+      <div className="App">
+        <h3> Que onda </h3>
+
+        {/* alerts */}
+        <div> 
+          {
+            this.state.showSuccessAlert && (successAlert)
+          }
+        </div>
+        <div> 
+          {
+            this.state.showErrorAlert && (errorAlert)
+          }
+        </div>
         
         <input
-            type="text"
+            type="number"
+            pattern="[0-9]*"
             placeholder="Amount"
-            // value={state.amount}
             onChange={this.handleAmountChange}
         />
 
         <br />
-        <select name="selectList" id="selectList" onChange={this.handleCategoryChange}>
-            { 
-              this.state.expenseTypes.map(type => (
-                  <option value={ type }> { type } </option>
-              ))
-            }
-        </select>
-        <input type="button" value="Submit" onClick={() => this.postExpense()}/>
+        <div className='expense-cards'>
+          { 
+            this.state.isLoading 
+            ? (
+                <ThreeDots 
+                    color="#0d6efd" 
+                    height={80} 
+                    width={80} />
+              )
+            : expenseCardsSection 
+          }
         </div>
+
+        <input type="button" value="Submit" onClick={() => this.postExpense()}/>
+      </div>
     );
   }
 }
