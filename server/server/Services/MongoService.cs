@@ -2,7 +2,6 @@ using server.Models;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using server.Resources;
-using System.Text.Json;
 
 namespace server.Services
 {
@@ -12,6 +11,8 @@ namespace server.Services
 
         private static readonly MongoClientSettings mongoSettings = MongoClientSettings.FromConnectionString(Keys.MONGO_CONNECTION_URI);
         private static readonly MongoClient mongoClient = new MongoClient(mongoSettings);
+
+        private static readonly ExpenseService expenseService = new ExpenseService();
 
         private IMongoDatabase mongoDatabase;
         private IMongoCollection<Expense> dbCollection;
@@ -51,7 +52,7 @@ namespace server.Services
             var settings = MongoClientSettings.FromConnectionString(Keys.MONGO_CONNECTION_URI);
             var client = new MongoClient(settings);
 
-            Console.WriteLine("Expense to string = " + JsonSerializer.Serialize(expense));
+            Console.WriteLine("Expense to string = " + System.Text.Json.JsonSerializer.Serialize(expense));
             
             await this.dbCollection.InsertOneAsync(expense);
         }
@@ -90,8 +91,19 @@ namespace server.Services
             {
                 Console.WriteLine(ex.Category + " - " + ex.Amount + " on " + ex.Date);
             }
+            
+            // Generate JSON file for chart creation
+            CreateExpenseSummaryJson(expenses);
 
             return expenses;
+        }
+
+        private void CreateExpenseSummaryJson(List<Expense> expenses)
+        {
+            var jsonString = 
+                Newtonsoft.Json.JsonConvert.SerializeObject(expenseService.GetExpenseSummary(expenses));
+            
+            System.IO.File.WriteAllText("../../chart-maker/expense-summary.json", jsonString);
         }
     }
 }
